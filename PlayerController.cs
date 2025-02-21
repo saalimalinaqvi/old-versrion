@@ -10,10 +10,16 @@ public class PlayerController : MonoBehaviour
     public float maxSpeed;
 
     private int desiredLane = 1;
-    public float laneDistance = 4;
+    public float laneDistance = 2.5f;
+
+    //public bool isGrounded;
+    //ublic LayerMask groundLayer;
+    //public Transform groundCheck;
 
     public float jumpForce;
     public float Gravity = -20;
+
+    public Animator animator;
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -24,7 +30,12 @@ public class PlayerController : MonoBehaviour
     {
         if (forwardSpeed < maxSpeed)
             forwardSpeed += 0.1f * Time.deltaTime;
+
+        animator.SetBool("isGameStarted", true);
         direction.z = forwardSpeed;
+
+        //isGrounded = Physics.CheckSphere(groundCheck.position, 0.15f, groundLayer);
+        //animator.SetBool("isGrounded", isGrounded);
         
         if (controller.isGrounded)
         {
@@ -37,6 +48,11 @@ public class PlayerController : MonoBehaviour
        else
         {
             direction.y += Gravity * Time.deltaTime;
+        }
+
+        if (SwipeManager.swipeDown)
+        {
+            StartCoroutine(Slide());
         }
 
         if(SwipeManager.swipeRight)
@@ -91,5 +107,12 @@ public class PlayerController : MonoBehaviour
         {
             PlayerManager.gameOver = true;
         }
+    }
+
+    private IEnumerator Slide()
+    {
+        animator.SetBool("isSlidinig", true);
+        yield return new WaitForSeconds(1.3f);
+        animator.SetBool("isSliding", false);
     }
 }
